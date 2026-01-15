@@ -1,0 +1,89 @@
+:root {
+  --font-main: 'Inter', sans-serif;
+  
+  /* Palette - Premium Dark */
+  --color-bg-main: #0F172A; /* Slate 900 */
+  --color-bg-card: #1E293B; /* Slate 800 */
+  --color-bg-input: #334155; /* Slate 700 */
+  
+  --color-text-primary: #F1F5F9; /* Slate 100 */
+  --color-text-secondary: #94A3B8; /* Slate 400 */
+  
+  --color-accent: #38BDF8; /* Sky 400 */
+  --color-accent-hover: #0EA5E9; /* Sky 500 */
+  
+  --color-success: #34D399; /* Emerald 400 */
+  --color-danger: #F87171; /* Red 400 */
+  --color-warning: #FBBF24; /* Amber 400 */
+  
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+/* Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: #0F172A;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+    background: transparent;
+    color: var(--color-text-secondary);
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+}
+.btn-icon:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--color-text-primary);
+}
+
+input, select {
+    background-color: var(--color-bg-input);
+    border: 1px solid transparent;
+    color: white;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    outline: none;
+    font-size: 1rem;
+}
+input:focus, select:focus {
+    border-color: var(--color-accent);
+}
