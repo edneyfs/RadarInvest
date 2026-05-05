@@ -23,7 +23,7 @@ import br.com.edneysiqueira.radarinvest.domain.provider.InformacoesAtivoProvider
 @Service
 @ConditionalOnProperty(name = "radar.provider.active", havingValue = "crawler")
 @Slf4j
-public class Investidor10CrawlerProvider implements ProventosProvider, InformacoesAtivoProvider {
+public class Investidor10CrawlerProvider implements ProventosProvider, InformacoesAtivoProvider, br.com.edneysiqueira.radarinvest.domain.provider.NewsProvider {
 
     private static final String BASE_URL_HOST = "https://investidor10.com.br/";
 
@@ -225,5 +225,104 @@ public class Investidor10CrawlerProvider implements ProventosProvider, Informaco
         }
 
         return detalhes;
+    }
+    @Override
+    public java.util.List<br.com.edneysiqueira.radarinvest.api.dto.NewsDTO> buscarNoticias(String ticker, String tipoAtivo) {
+        java.util.List<br.com.edneysiqueira.radarinvest.api.dto.NewsDTO> noticias = new java.util.ArrayList<>();
+        try {
+            String segment = "acoes";
+            if ("B3_FII".equalsIgnoreCase(tipoAtivo)) {
+                segment = "fiis";
+            } else if ("B3_BDR".equalsIgnoreCase(tipoAtivo)) {
+                segment = "bdrs";
+            }
+
+            // URL base: https://investidor10.com.br/acoes/fatos-relevantes-comunicados/?s=VALE3
+            String url = BASE_URL_HOST + segment + "/fatos-relevantes-comunicados/?s=" + ticker.toUpperCase();
+            log.info("Crawling Notícias Investidor10 para {}: {}", ticker, url);
+
+            // Fetch Page 1
+            // TODO: Implement pagination loop if needed for 3 months. For now, fetch page 1.
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                    .timeout(10000)
+                    .get();
+
+            // Based on simple inspection of "fatos relevantes" page structure (usually .card or grid)
+            // Strategy: Find all links with text "Abrir" or verify structure.
+            // A pattern often seen is a grid with items.
+            // Let's try to find the grid items.
+            
+            // Selector strategy: Look for elements that contain the link to the document
+            Elements linkElements = doc.select("a[href*='/link_comunicado/']");
+
+            LocalDate cutoffDate = LocalDate.now().minusMonths(3);
+
+            for (Element linkEl : linkElements) {
+                try {
+                    // Structure hypothesis: Link is in a cell, inside a row.
+                    // We need to go up to the row to find other cells (Description, Date).
+                    // Level 1: Cell or wrapper
+                    // Level 2: Row ?
+                    
+                    Element row = linkEl.parent();
+                    if (row == null) continue;
+                    
+                    // Traverse up to 3 levels to find a container with enough text (Date + Desc)
+                    // Usually a Row has > 20 chars and contains the date.
+                    for (int i = 0; i < 3; i++) {
+                        if (row.text().length() < 10 || !row.text().matches(".*\\d{2}/\\d{2}/\\d{4}.*")) {
+                            if (row.parent() != null) {
+                                row = row.parent();
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+
+                    String text = row.text();
+                    // log.debug("Analyzing Row Text: {}", text);
+
+                    // Extract Date
+                    java.util.regex.Pattern datePattern = java.util.regex.Pattern.compile("(\\d{2}/\\d{2}/\\d{4})");
+                    java.util.regex.Matcher matcher = datePattern.matcher(text);
+                    
+                    LocalDate date = null;
+                    if (matcher.find()) {
+                        date = parseDate(matcher.group(1));
+                    }
+                    
+                    if (date == null) {
+                        // log.warn("Date not found in row: {}", row.outerHtml());
+                        continue;
+                    }
+
+                    // Extract Description
+                    // Remove "Abrir", "Ticker", Date
+                    String description = text.replace("Abrir", "")
+                            .replace(ticker.toUpperCase(), "")
+                            .replace(matcher.group(1), "") // Remove date string
+                            .trim();
+                    
+                    // Cleanup extra spaces and common noise
+                    description = description.replaceAll("\\s+", " ").trim();
+                    if (description.startsWith("-")) description = description.substring(1).trim();
+
+                    // Link
+                    String link = linkEl.attr("href");
+                     
+                    // Filter by 3 months
+                    if (date.isAfter(cutoffDate)) {
+                         noticias.add(new br.com.edneysiqueira.radarinvest.api.dto.NewsDTO(description, date, link));
+                    }
+                } catch (Exception e) {
+                    log.warn("Error parsing news item: {}", e.getMessage());
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Erro no crawler de notícias para {}: {}", ticker, e.getMessage());
+        }
+        return noticias;
     }
 }

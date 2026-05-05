@@ -21,6 +21,9 @@ cd radarinvest-api
 ./mvnw spring-boot:run
 # Windows
 mvnw spring-boot:run
+
+OU
+set "JAVA_HOME=C:\Program Files\Java\jdk-21.0.8" && mvn spring-boot:run
 ```
 *A API rodará em http://localhost:8080*
 
@@ -29,6 +32,8 @@ Em outro terminal:
 ```bash
 cd radarinvest-web
 npm install
+npm run dev
+OU apenas:
 npm run dev
 ```
 *Acesse em http://localhost:3000*

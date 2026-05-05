@@ -29,14 +29,33 @@ export const WatchlistService = {
         await api.delete(`/watchlist/${ticker}`);
     },
 
-    listarNoticias: async (ticker: string): Promise<EventoNoticia[]> => {
-        const response = await api.get<EventoNoticia[]>(`/watchlist/${ticker}/noticias`);
-        return response.data;
+    listarNoticias: async (ticker: string, tipoAtivo: string): Promise<EventoNoticia[]> => {
+        // Backend returns NewsDTO { descricao, data, link }
+        // We map to EventoNoticia
+        const response = await api.get<any[]>(`/news/${ticker}`, {
+             params: { tipoAtivo }
+        });
+        return response.data.map((item: any, index: number) => ({
+            id: String(index),
+            identificadorAtivo: ticker,
+            titulo: item.descricao,
+            resumo: item.descricao,
+            url: item.link,
+            publicadoEm: item.data, // yyyy-MM-dd
+            categoria: 'Fato Relevante',
+            severidade: 'BAIXO',
+            fonte: 'Investidor10'
+        }));
     }
 };
 
 export const AdminService = {
     forcarAtualizacao: async (): Promise<void> => {
         await api.post('/atualizar');
+    },
+
+    getDashboard: async (): Promise<import('../types').AdminDashboardDTO> => {
+        const response = await api.get<import('../types').AdminDashboardDTO>('/admin/dashboard');
+        return response.data;
     }
 };

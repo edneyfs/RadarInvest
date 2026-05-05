@@ -24,7 +24,7 @@ export const AssetCard: React.FC<Props> = ({ item, onRemove, onViewNews, onClick
 
     const handleCheckNews = async () => {
         try {
-            const noticias = await WatchlistService.listarNoticias(item.ticker);
+            const noticias = await WatchlistService.listarNoticias(item.ticker, item.tipoAtivo);
             onViewNews(noticias);
         } catch (error) {
             console.error(error);

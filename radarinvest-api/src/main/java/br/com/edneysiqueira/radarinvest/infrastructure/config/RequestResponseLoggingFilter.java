@@ -9,6 +9,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
@@ -31,7 +32,8 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
                 requestURI.contains("/docs") ||
                 requestURI.contains("/api-docs") ||
                 requestURI.contains("/swagger-ui") ||
-                requestURI.contains("/favicon")) {
+                requestURI.contains("/favicon") ||
+                requestURI.contains("/h2-console")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,12 +50,18 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
         }
     }
 
+    @Autowired
+    private br.com.edneysiqueira.radarinvest.infrastructure.service.LogMaskingService maskingService;
+
     private void logRequest(ContentCachingRequestWrapper request) {
         String method = request.getMethod();
         String uri = request.getRequestURI();
         String body = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8);
 
-        log.info("REQUEST [{} {}] Payload: {}", method, uri, body.replaceAll("\n", ""));
+        // Mascara o corpo usando o serviço de anotações
+        String safeBody = maskingService.maskLog(body.replaceAll("\n", ""));
+
+        log.info("REQUEST [{} {}] Payload: {}", method, uri, safeBody);
     }
 
     private void logResponse(ContentCachingResponseWrapper response) {

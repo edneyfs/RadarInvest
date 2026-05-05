@@ -30,6 +30,7 @@ export const TickerInput: React.FC<Props> = ({ onUpdate }) => {
     return (
         <form onSubmit={handleSubmit} className="card" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
             <input
+                id="novo-ativo-input"
                 type="text"
                 placeholder="Ex: HGLG11"
                 value={ticker}
@@ -37,12 +38,12 @@ export const TickerInput: React.FC<Props> = ({ onUpdate }) => {
                 style={{ flex: 1 }}
                 maxLength={6}
             />
-            <select value={tipo} onChange={(e) => setTipo(e.target.value)} style={{ width: '150px' }}>
+            <select id="tipo-ativo-select" value={tipo} onChange={(e) => setTipo(e.target.value)} style={{ width: '150px' }}>
                 <option value="B3_FII">Fundo Imob (FII)</option>
                 <option value="B3_ACAO">Ação B3</option>
                 <option value="B3_BDR">BDR</option>
             </select>
-            <button type="submit" className="btn-primary" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button id="adicionar-ativo-btn" type="submit" className="btn-primary" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <FaPlus /> {loading ? 'Adicionando...' : 'Adicionar ao Radar'}
             </button>
         </form>

@@ -30,6 +30,7 @@ public class UsuarioService {
                 .cpf(dto.cpf())
                 .email(dto.email())
                 .senha(passwordEncoder.encode(dto.senha()))
+                .role("USER")
                 .build();
 
         Usuario salvo = repository.save(usuario);
@@ -39,5 +40,27 @@ public class UsuarioService {
 
     public Optional<Usuario> findByEmail(String email) {
         return repository.findByEmail(email);
+    }
+
+    public void updateLastSeen(String email) {
+        repository.findByEmail(email).ifPresent(user -> {
+            user.setLastSeen(java.time.LocalDateTime.now());
+            repository.save(user);
+        });
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void ensureAdminUser() {
+        if (repository.findByEmail("admin").isEmpty()) {
+            System.out.println("Criando usuário ADMIN padrão...");
+            Usuario admin = Usuario.builder()
+                    .nome("Administrador")
+                    .cpf("00000000000")
+                    .email("admin")
+                    .senha(passwordEncoder.encode("2904@Arthur"))
+                    .role("ADMIN")
+                    .build();
+            repository.save(admin);
+        }
     }
 }

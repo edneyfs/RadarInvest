@@ -7,4 +7,7 @@ import java.util.UUID;
 
 public interface ItemWatchlistRepository extends JpaRepository<ItemWatchlist, UUID> {
     Optional<ItemWatchlist> findByTicker(String ticker);
+    
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(DISTINCT i.ticker) FROM ItemWatchlist i")
+    long countDistinctTickers();
 }

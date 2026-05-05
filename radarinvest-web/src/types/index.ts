@@ -45,3 +45,9 @@ export interface AssetDetails {
     numeroCotistas: number;
     liquidezDiaria: number;
 }
+
+export interface AdminDashboardDTO {
+    totalUsers: number;
+    onlineUsers: number;
+    monitoredTickers: number;
+}

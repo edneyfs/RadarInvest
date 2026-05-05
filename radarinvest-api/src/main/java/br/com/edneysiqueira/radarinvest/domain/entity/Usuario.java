@@ -26,9 +26,15 @@ public class Usuario implements UserDetails {
     private String email;
     private String senha;
 
+    private String role; // "USER" or "ADMIN"
+    private java.time.LocalDateTime lastSeen;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if (role == null) {
+            role = "USER";
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override

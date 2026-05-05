@@ -19,6 +19,14 @@ export interface TokenDTO {
     nome: string;
 }
 
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+    sub: string;
+    roles: string[];
+    exp: number;
+}
+
 export const authService = {
     login: async (dados: LoginDTO): Promise<TokenDTO> => {
         const response = await api.post<TokenDTO>('/auth/login', dados);
@@ -36,14 +44,31 @@ export const authService = {
     logout: () => {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario_nome');
-        // Redireciona considerando o base path definido no Vite/Router
         window.location.href = '/radarinvest/login';
     },
 
     isAuthenticated: () => {
         const token = localStorage.getItem('token');
-        // Adicionar verificação de expiração se desejar (jwt-decode)
-        return !!token;
+        if (!token) return false;
+        try {
+            const decoded = jwtDecode<JwtPayload>(token);
+            const currentTime = Date.now() / 1000;
+            return decoded.exp > currentTime;
+        } catch (error) {
+            return false;
+        }
+    },
+
+    isAdmin: () => {
+        const token = localStorage.getItem('token');
+        if (!token) return false;
+        try {
+            const decoded = jwtDecode<any>(token);
+            // Check for 'role' claim added in backend
+            return decoded.role === 'ADMIN';
+        } catch (error) {
+            return false;
+        }
     },
 
     getToken: () => {

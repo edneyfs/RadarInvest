@@ -29,3 +29,7 @@ Thumbs.db
 # Project specific
 temp_page_source.html
 data/
+.agent/
+.claude/
+tests/web/logs/
+radarinvest-api/target

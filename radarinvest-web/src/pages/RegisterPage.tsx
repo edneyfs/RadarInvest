@@ -36,6 +36,11 @@ const RegisterPage: React.FC = () => {
             return;
         }
 
+        if (formData.nome.length < 5) {
+            setError('Nome deve ter no mínimo 5 caracteres.');
+            return;
+        }
+
         if (!validatePassword(formData.senha)) {
             setError('Senha deve ter no mínimo 8 caracteres, 1 maiúscula, 1 minúscula e 1 caractere especial.');
             return;
@@ -55,6 +60,7 @@ const RegisterPage: React.FC = () => {
             <h1>Cadastro</h1>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '300px' }}>
                 <input
+                    id="nome"
                     name="nome"
                     placeholder="Nome Completo"
                     value={formData.nome}
@@ -63,6 +69,7 @@ const RegisterPage: React.FC = () => {
                     style={{ padding: '8px' }}
                 />
                 <input
+                    id="cpf"
                     name="cpf"
                     placeholder="CPF (apenas números)"
                     value={formData.cpf}
@@ -71,6 +78,7 @@ const RegisterPage: React.FC = () => {
                     style={{ padding: '8px' }}
                 />
                 <input
+                    id="email"
                     name="email"
                     type="email"
                     placeholder="Email"
@@ -82,6 +90,7 @@ const RegisterPage: React.FC = () => {
 
                 <div style={{ position: 'relative' }}>
                     <input
+                        id="senha"
                         name="senha"
                         type={showPassword ? "text" : "password"}
                         placeholder="Senha"
@@ -91,6 +100,7 @@ const RegisterPage: React.FC = () => {
                         style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
                     />
                     <button
+                        id="toggle-password"
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         style={{
@@ -109,6 +119,7 @@ const RegisterPage: React.FC = () => {
                 </div>
 
                 <input
+                    id="confirmarSenha"
                     type="password"
                     placeholder="Confirmar Senha"
                     value={confirmSenha}

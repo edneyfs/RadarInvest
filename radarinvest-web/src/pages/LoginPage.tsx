@@ -30,6 +30,7 @@ const LoginPage: React.FC = () => {
             <h1>Login</h1>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '300px' }}>
                 <input
+                    id="email"
                     type="email"
                     placeholder="Email"
                     value={email}
@@ -38,6 +39,7 @@ const LoginPage: React.FC = () => {
                     style={{ padding: '8px' }}
                 />
                 <input
+                    id="password"
                     type="password"
                     placeholder="Senha"
                     value={senha}
